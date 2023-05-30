@@ -1,0 +1,24 @@
+{
+  "name": "disgrafia",
+  "version": "1.0.0",
+  "description": "Trabalho de conclusão de curso em Engenharia Biomédica sobre Disgrafia",
+  "main": "server.js",
+  "scripts": {
+    "start": "npm-run-all -p nodemon browsersync",
+    "nodemon": "nodemon server.js",
+    "browsersync": "browser-sync start --proxy http://localhost:5000 --files 'public,views'"
+  },
+  "author": "Eduardo Menegatti Marques",
+  "license": "ISC",
+  "dependencies": {
+    "chart.js": "^4.3.0",
+    "express": "^4.17.1",
+    "method-override": "^3.0.0",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.27.5",
+    "nodemon": "^2.0.12",
+    "npm-run-all": "^4.1.5"
+  }
+}

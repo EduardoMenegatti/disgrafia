@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- Some useful reference links:
+		https://patrickhlauke.github.io/touch/tests/event-listener-force-pressure.html 
+		https://codepen.io/kangax/pen/zofsp 
+		https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent 
+		https://www.w3.org/TR/pointerevents/ 
+		https://en.wikipedia.org/wiki/B%C3%A9zier_curve 
+		https://stackoverflow.com/questions/10673122/how-to-save-canvas-as-an-image-with-canvas-todataurl 
+		https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/samples/hh779016(v=vs.85) 
+		https://stackoverflow.com/questions/24861073/detect-if-any-kind-of-ie-msie/24861307 
+		https://stackoverflow.com/questions/33152523/how-do-i-detect-ie-and-edge-browser 
+		https://codepen.io/kangax/pen/vGxEm 
+		https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_style_cursor2 
+		https://stackoverflow.com/questions/737022/how-do-i-disable-right-click-on-my-web-page 
+-->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disgraphia</title>
+   
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body onload="initPage() " onresize="setCanvasProps()" oncontextmenu="return false;">
+    <canvas id="examArea" width="1000" height="600"></canvas>
+    <div class="actionButtonGroup">
+        <button type="button" class="actionButton" onclick="clearCanvas()" >Clear Desk</button>
+        <button type="button" class="actionButton" onclick="report()" >Clear Data</button>
+        <button type="button" class="actionButton" onclick="saveCanvas()" >Save Report</button>
+		<input type="checkbox" id="tiltCheckbox" value="useTilt" onclick="setTilt()">
+		<label for="tiltCheckbox" style="font-size:20px">Draw with tilt?</label>
+    </div>
+	<a id="link"></a>
+    <script src="script.js"></script>
+</body>
+</html>
