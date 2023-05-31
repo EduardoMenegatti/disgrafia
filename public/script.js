@@ -24,6 +24,9 @@ var EPenButton = {
 
 let timestamp;
 const examData = [];
+const examTime = [];
+const examDataObj = [];
+const eventsWriting = [];
 
 function initPage() {
   setCanvasProps();
@@ -72,7 +75,6 @@ function setTilt() {
 function clearCanvas() {
   context.fillStyle = colorBackground;
   context.fillRect(0, 0, myCanvas.width, myCanvas.height);
-  window.location.reload();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -256,6 +258,7 @@ window.addEventListener(
     //
     function pointerEventDraw(evt) {
       var outStr = "";
+      var stringEvents = "";
       var canvasRect = myCanvas.getBoundingClientRect();
       var screenPos = {
         x: evt.clientX,
@@ -273,7 +276,7 @@ window.addEventListener(
       var rotate = evt.twist;
 
       if (reportData) {
-        outStr = evt.pointerType + " , " + evt.type + " , ";
+        stringEvents = evt.pointerType + " , " + evt.type + " , ";
       }
 
       if (evt.pointerType) {
@@ -308,7 +311,7 @@ window.addEventListener(
             //context.lineWidth = pressure;
             context.strokeStyle = "black";
             if (buttons == EPenButton.barrel) {
-              pressure = 0;
+              pressure = 0.5;
               context.lineWidth = 0;
             }
 
@@ -374,7 +377,6 @@ window.addEventListener(
             break;
 
           default:
-            outStr += "WARNING: unhandled event: " + evt.type + ",";
             console.log("WARNING: unhandled event: " + evt.type);
             break;
         }
@@ -383,23 +385,24 @@ window.addEventListener(
         // IE11 barfs on Number.parseFloat(xxxx).toFixed(3)
         if (reportData) {
           outStr +=
-            "X:" +
+            "x:" +
             parseFloat(screenPos.x) +
-            ", Y:" +
+            ",y:" +
             parseFloat(screenPos.y) +
-            ", P:" +
+            ",p:" +
             parseFloat(pressure).toFixed(3) +
-            ", Tx:" +
+            ",tx:" +
             parseFloat(tilt.x).toFixed(3) +
-            ", Ty:" +
+            ",ty:" +
             parseFloat(tilt.y).toFixed(3) +
-            ", R:" +
+            ",r:" +
             parseFloat(rotate).toFixed(3) +
-            ", B:" +
+            ",b:" +
             buttons;
 
           setTimeout(function () {
-            examData.push([parseFloat(String(Date.now())), outStr]);
+            examData.push([Date.now(), outStr]);
+            eventsWriting.push([parseFloat(String(Date.now())), stringEvents]);
           }, 100);
         }
       }
@@ -422,6 +425,33 @@ window.addEventListener(
 console.log("dados: ", examData);
 
 /////////////////////////////////////////////////////////////////////////
-// Clears the data report field.
-//
-function report(examData) {}
+////////////////////////REPORT
+const speedModule = [];
+function report() {
+  for (let i = 0; i < examData.length; i++) {
+    examTime.push(examData[i][0]);
+    const substrings = examData[i][1].split(",");
+    const obj = {};
+    substrings.forEach((sub) => {
+      const parts = sub.split(":");
+      const key = parts[0];
+      const value = parts[1];
+      obj[key] = parseFloat(value);
+    });
+    examDataObj.push(obj);
+  }
+}
+function velocity() {
+  //  px / seconds
+  for (let i = 0; i < examDataObj.length - 1; i++) {
+    const diffX =
+      parseInt(examDataObj[i + 1]["x"]) - parseInt(examDataObj[i]["x"]);
+    const diffY =
+      parseInt(examDataObj[i + 1]["y"]) - parseInt(examDataObj[i]["y"]);
+    const diffT = (examTime[i + 1] - examTime[i]) / 1000; //seconds
+    const speedWriting = parseInt(
+      Math.sqrt((diffX / diffT) ** 2 + (diffY / diffT) ** 2)
+    );
+    speedModule.push(speedWriting);
+  }
+}
