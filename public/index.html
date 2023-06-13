@@ -24,22 +24,53 @@
 </head>
 <body onload="initPage() " onresize="setCanvasProps()" oncontextmenu="return false;">
 	<header>
+		<div class="buttonContainer">
+			<button type="button" class="reportButton"  onclick="clearCanvas()" >Clear Desk</button>
+				<button type="button" class="reportButton" onclick="report()" >Report</button>
+				<button type="button" class="reportButton"onclick="saveCanvas()" >Save Report</button>
+				<div class="tilt">
+					<input type="checkbox" id="tiltCheckbox" value="useTilt" onclick="setTilt()">
+					<label for="tiltCheckbox" >Draw with tilt?</label>
+				</div>
+		</div>
         <div class="links">
-            <a href="/index.html">Exame</a>
-            <a href="/report.html">Relatório</a>
+			
+				
+			
         </div>
     </header>
     <div class="card">
 		<canvas id="examArea" width="1000px" height="600px"></canvas>
-    <div class="actionButtonGroup">
-        <button type="button" class="actionButton" onclick="clearCanvas()" >Clear Desk</button>
-        <button type="button" class="actionButton" onclick="report(),velocity()" >Clear Data</button>
-        <button type="button" class="actionButton" onclick="saveCanvas()" >Save Report</button>
-		<input type="checkbox" id="tiltCheckbox" value="useTilt" onclick="setTilt()">
-		<label for="tiltCheckbox" style="font-size:20px">Draw with tilt?</label>
-    </div>
+		<!-- <div class="actionButtonGroup">
+			<button type="button" class="actionButton" onclick="clearCanvas()" >Clear Desk</button>
+			<button type="button" class="actionButton" onclick="report()" >Report</button>
+			<button type="button" class="actionButton" onclick="saveCanvas()" >Save Report</button>
+			<div class="tilt">
+				<input type="checkbox" id="tiltCheckbox" value="useTilt" onclick="setTilt()">
+				<label for="tiltCheckbox" >Draw with tilt?</label>
+			</div>
+		</div> -->
 	</div>
+
+	<div class="card-relatorio">
+
+        <h1>Relatório da dinâmica da escrita:</h1>
+        <p id="tempo de resposta"></p>
+        <div class="velocidade">
+            <canvas id="velocidade"></canvas>
+        </div>
+        <div class="velocidade">
+            <canvas id="pressao"></canvas>
+        </div>
+        <p id="totalTemp"></p>
+        <p id="downTemp"></p>
+        <p id="upTemp"> </p>
+
+    </div>
+
+
 	<a id="link"></a>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
     <script src="script.js"></script>
 </body>
 </html>

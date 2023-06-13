@@ -1,50 +1,32 @@
 const currentPage = location.pathname;
-const menuItems = document.querySelectorAll("header .links a");
-
-for (item of menuItems) {
-  if (currentPage.includes(item.getAttribute("href"))) {
-    item.classList.add("active");
-  }
-}
-var examArea = document.getElementById("examArea");
-var contextExamArea = examArea.getContext("2d");
-var supportsPointerEvents = window.PointerEvent;
-var reportData = true;
-
+const reportData = true;
 const colorBackground = "rgba(254, 254, 254, 1.0)";
-var isDrawing = false;
-var inStroke = false;
-var seTilt = false;
-var EPenButton = {
+const seTilt = false;
+const EPenButton = {
   tip: 0x1, // left mouse, touch contact, pen contact
   barrel: 0x2, // right mouse, pen barrel button
   middle: 0x4, // middle mouse
   eraser: 0x20, // pen eraser button
 };
 
-let timestamp;
+let timestamp, chartVelocity, chartPressure;
 const examData = [];
 const examTime = [];
 const examDataObj = [];
 const eventsWriting = [];
+const speedModule = [];
+const pressureGrafic = [];
 
-function initPage() {
-  setCanvasProps();
-}
+const examArea = document.getElementById("examArea");
+const contextExamArea = examArea.getContext("2d");
 var myCanvas = document.getElementById("examArea");
 var context = myCanvas.getContext("2d");
+
 var supportsPointerEvents = window.PointerEvent;
 var inStroke = false;
 var posLast = { x: 0, y: 0 };
 var isDrawing = false;
 var useTilt = false;
-
-var EPenButton = {
-  tip: 0x1, // left mouse, touch contact, pen contact
-  barrel: 0x2, // right mouse, pen barrel button
-  middle: 0x4, // middle mouse
-  eraser: 0x20, // pen eraser button
-};
 
 function initPage() {
   setCanvasProps();
@@ -82,12 +64,20 @@ function clearCanvas() {
 //
 function saveCanvas() {
   var link = document.getElementById("link");
-  link.setAttribute("download", "Scribble.png");
+  link.setAttribute("download", "escrita.png");
   link.setAttribute(
     "href",
     myCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream")
   );
   link.click();
+
+  var a = document.getElementById("velocidade");
+  a.setAttribute("download", "velocidade.png");
+  a.href = ctx.toBase64Image();
+  a.download = "velocidade.png";
+
+  // Trigger the download
+  a.click();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -391,12 +381,6 @@ window.addEventListener(
             parseFloat(screenPos.y) +
             ",p:" +
             parseFloat(pressure).toFixed(3) +
-            ",tx:" +
-            parseFloat(tilt.x).toFixed(3) +
-            ",ty:" +
-            parseFloat(tilt.y).toFixed(3) +
-            ",r:" +
-            parseFloat(rotate).toFixed(3) +
             ",b:" +
             buttons;
 
@@ -410,23 +394,30 @@ window.addEventListener(
 
     if (supportsPointerEvents) {
       // if Pointer Events are supported, only listen to pointer events
-      for (var idx = 0; idx < pointerEvents.length; idx++) {
+      for (let idx = 0; idx < pointerEvents.length; idx++) {
         myCanvas.addEventListener(pointerEvents[idx], pointerEventDraw, false);
       }
     } else {
       // traditional mouse/touch/pen event handlers
-      for (var idx = 0; idx < events.length; idx++) {
+      for (let idx = 0; idx < events.length; idx++) {
         myCanvas.addEventListener(events[idx], eventDraw, false);
       }
     }
   },
   true
-); // end window.addEventListener
-console.log("dados: ", examData);
+);
+//console.log("dados: ", examData);
 
 /////////////////////////////////////////////////////////////////////////
 ////////////////////////REPORT
-const speedModule = [];
+const timeUp = [];
+
+function linspace(start, stop, num, endpoint = true) {
+  const div = endpoint ? num - 1 : num;
+  const step = (stop - start) / div;
+  return Array.from({ length: num }, (_, i) => start + step * i);
+}
+var ctx, ctxp;
 function report() {
   for (let i = 0; i < examData.length; i++) {
     examTime.push(examData[i][0]);
@@ -440,8 +431,7 @@ function report() {
     });
     examDataObj.push(obj);
   }
-}
-function velocity() {
+
   //  px / seconds
   for (let i = 0; i < examDataObj.length - 1; i++) {
     const diffX =
@@ -453,5 +443,93 @@ function velocity() {
       Math.sqrt((diffX / diffT) ** 2 + (diffY / diffT) ** 2)
     );
     speedModule.push(speedWriting);
+    pressureGrafic.push(examDataObj[i]["p"]);
+
+    if (examDataObj[i]["p"] == 0 && i < examDataObj.length) {
+      timeUp.push((examTime[i + 1] - examTime[i]) / 1000);
+    }
   }
+
+  const tempmax = (examTime.at(-1) - examTime[0]) / 1000;
+  const tempoTotalElement = document.getElementById("totalTemp");
+  tempoTotalElement.textContent +=
+    " O tempo total é de: " + tempmax.toFixed(2) + " segundos";
+
+  const sumtimeUP = timeUp.reduce(
+    (accumulator, value) => accumulator + value,
+    0
+  );
+  const tempoUP = document.getElementById("upTemp");
+  tempoUP.textContent +=
+    "Tempo caneta em suspensão: " + sumtimeUP.toFixed(2) + " segundos";
+
+  const writting = tempmax.toFixed(2) - sumtimeUP.toFixed(2);
+
+  const tempowritting = document.getElementById("downTemp");
+  tempowritting.textContent += "Tempo escrevendo: " + writting + " segundos";
+
+  var tempo = linspace(0, tempmax, examTime.length, (endpoint = true));
+
+  ctx = document.getElementById("velocidade").getContext("2d");
+  chartVelocity = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: tempo,
+      datasets: [
+        {
+          label: "Velocidade",
+          data: speedModule,
+          borderColor: "blue",
+          fill: false,
+          tension: 0.1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Velocidade [pixel/s] ",
+        },
+      },
+      scales: {
+        x: {
+          type: "linear",
+          position: "bottom",
+        },
+      },
+    },
+  });
+  var ctxp = document.getElementById("pressao").getContext("2d");
+  chartPressure = new Chart(ctxp, {
+    type: "line",
+    data: {
+      labels: tempo,
+      datasets: [
+        {
+          label: "pressao",
+          data: pressureGrafic,
+          borderColor: "red",
+          fill: false,
+          tension: 0.1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Pressao: (0 ~ 1.000) ",
+        },
+      },
+      scales: {
+        x: {
+          type: "linear",
+          position: "bottom",
+        },
+      },
+    },
+  });
 }
