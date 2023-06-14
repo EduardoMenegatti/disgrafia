@@ -4,6 +4,14 @@ Trabalho de conclusão de curso em Engenharia Biomédica sobre Disgrafia
 
 ## Rodar o projeto
 
-- update com: -- npm i
-- rodar o projeto com -- node server.js
-- acessar: http://localhost:3000/
+- update com:
+
+```
+npm i
+```
+
+- rodar o projeto com:
+
+```
+npm run start
+```

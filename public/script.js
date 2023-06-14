@@ -567,5 +567,5 @@ function report() {
     10,
     120
   );
-  doc.save("relatorio.pdf");
+  doc.save("rel.pdf");
 }
