@@ -466,7 +466,8 @@ function report() {
   const writting = tempmax.toFixed(2) - sumtimeUP.toFixed(2);
 
   const tempowritting = document.getElementById("downTemp");
-  tempowritting.textContent += "Tempo escrevendo: " + writting + " segundos";
+  tempowritting.textContent +=
+    "Tempo escrevendo: " + writting.toFixed(2) + " segundos";
 
   var tempo = linspace(0, tempmax, examTime.length, (endpoint = true));
 
