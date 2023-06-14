@@ -471,7 +471,7 @@ function report() {
 
   var tempo = linspace(0, tempmax, examTime.length, (endpoint = true));
 
-  ctx = document.getElementById("velocidade").getContext("2d");
+  ctx = document.getElementById("velocidad").getContext("2d");
   chartVelocity = new Chart(ctx, {
     type: "line",
     data: {
@@ -533,4 +533,39 @@ function report() {
       },
     },
   });
+
+  var canvasVelocity = document.getElementById("velocidad");
+  var graficVelocity = canvasVelocity.toDataURL("image/jpeg", 1.0);
+  console.log(graficVelocity);
+  var canvasPressure = document.getElementById("pressao");
+  var graficPressure = canvasPressure.toDataURL("image/jpeg", 1.0);
+
+  function getChartImage() {
+    var canvas = document.getElementById("velocidad");
+    var chartDataURL = canvas.toDataURL("image/jpeg", 1.0);
+    return chartDataURL;
+  }
+
+  var docDefinition = {
+    content: [
+      {
+        text: "Relatório da Dinânica da Escrita: ",
+        fontSize: 20,
+        bold: true,
+        margin: [0, 0, 0, 10],
+      },
+      { image: graficVelocity, with: 400, aligment: "center" },
+    ],
+  };
+  pdfMake.createPdf(docDefinition).download("relatorio.pdf");
+
+  const doc = new jspdf.jsPDF();
+  doc.addImage(graficVelocity, "JPEG", 10, 10, 190, 100);
+  doc.setFontSize(12);
+  doc.text(
+    "Este é um relatório com o gráfico plotado usando Chart.js.",
+    10,
+    120
+  );
+  doc.save("relatorio.pdf");
 }

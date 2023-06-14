@@ -18,6 +18,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/polyfills.umd.js"></script>
     <title>Disgraphia</title>
    
     <link rel="stylesheet" href="styles.css">
@@ -57,7 +60,7 @@
         <h1>Relatório da dinâmica da escrita:</h1>
         <p id="tempo de resposta"></p>
         <div class="velocidade">
-            <canvas id="velocidade"></canvas>
+            <canvas id="velocidad"></canvas>
         </div>
         <div class="velocidade">
             <canvas id="pressao"></canvas>
@@ -71,6 +74,7 @@
 
 	<a id="link"></a>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.0/jspdf.umd.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
