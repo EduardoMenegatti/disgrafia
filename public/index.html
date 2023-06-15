@@ -18,41 +18,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/polyfills.umd.js"></script>
     <title>Disgraphia</title>
    
     <link rel="stylesheet" href="styles.css">
 </head>
-<body onload="initPage() " onresize="setCanvasProps()" oncontextmenu="return false;">
+<body onload="initPage()" onresize="setCanvasProps()" oncontextmenu="return false;">
 	<header>
 		<div class="buttonContainer">
-			<button type="button" class="reportButton"  onclick="clearCanvas()" >Clear Desk</button>
-				<button type="button" class="reportButton" onclick="report()" >Report</button>
-				<button type="button" class="reportButton"onclick="saveCanvas()" >Save Report</button>
+			<button type="button" class="reportButton"  onclick="clearCanvas()" >Limpar Quadro</button>
+				<button type="button" class="reportButton" onclick="report()" >Gerar Relatório</button>
+				<button type="button" class="reportButton"onclick="saveCanvas()" >Salvar imagem</button>
 				<div class="tilt">
 					<input type="checkbox" id="tiltCheckbox" value="useTilt" onclick="setTilt()">
 					<label for="tiltCheckbox" >Draw with tilt?</label>
 				</div>
 		</div>
-        <div class="links">
-			
-				
-			
-        </div>
+        <!-- <div class="links"></div> -->
     </header>
     <div class="card">
 		<canvas id="examArea" width="1000px" height="600px"></canvas>
-		<!-- <div class="actionButtonGroup">
-			<button type="button" class="actionButton" onclick="clearCanvas()" >Clear Desk</button>
-			<button type="button" class="actionButton" onclick="report()" >Report</button>
-			<button type="button" class="actionButton" onclick="saveCanvas()" >Save Report</button>
-			<div class="tilt">
-				<input type="checkbox" id="tiltCheckbox" value="useTilt" onclick="setTilt()">
-				<label for="tiltCheckbox" >Draw with tilt?</label>
-			</div>
-		</div> -->
 	</div>
 
 	<div class="card-relatorio">
@@ -70,11 +54,8 @@
         <p id="upTemp"> </p>
 
     </div>
-
-
 	<a id="link"></a>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.0/jspdf.umd.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -16,6 +16,8 @@ const examDataObj = [];
 const eventsWriting = [];
 const speedModule = [];
 const pressureGrafic = [];
+const startTime = Date.now();
+const csvData = [];
 
 const examArea = document.getElementById("examArea");
 const contextExamArea = examArea.getContext("2d");
@@ -70,14 +72,6 @@ function saveCanvas() {
     myCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream")
   );
   link.click();
-
-  var a = document.getElementById("velocidade");
-  a.setAttribute("download", "velocidade.png");
-  a.href = ctx.toBase64Image();
-  a.download = "velocidade.png";
-
-  // Trigger the download
-  a.click();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -385,8 +379,11 @@ window.addEventListener(
             buttons;
 
           setTimeout(function () {
-            examData.push([Date.now(), outStr]);
-            eventsWriting.push([parseFloat(String(Date.now())), stringEvents]);
+            examData.push([Date.now() - startTime, outStr]);
+            eventsWriting.push([
+              parseFloat(String(Date.now() - startTime)),
+              stringEvents,
+            ]);
           }, 100);
         }
       }
@@ -410,14 +407,44 @@ window.addEventListener(
 
 /////////////////////////////////////////////////////////////////////////
 ////////////////////////REPORT
-const timeUp = [];
 
-function linspace(start, stop, num, endpoint = true) {
-  const div = endpoint ? num - 1 : num;
-  const step = (stop - start) / div;
-  return Array.from({ length: num }, (_, i) => start + step * i);
+function createCSV(csvData) {
+  console.log(csvData);
+  const header = ["Tempo", "Botão", "Pos X", "Pos Y", "Velocidade", "Pressão"];
+  const data = [];
+
+  // Preencha 'N' com o número de linhas desejado
+  for (let i = 0; i <= csvData.length - 1; i++) {
+    const row = [
+      csvData[i].t,
+      csvData[i].b,
+      csvData[i].x,
+      csvData[i].y,
+      csvData[i].s,
+      csvData[i].p,
+    ];
+    data.push(row.join(","));
+  }
+
+  const csvContent = `${header.join(",")}\n${data.join("\n")}`;
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+  // Código para fazer o download do arquivo
+  const link = document.createElement("a");
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "arquivo.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 }
+
+const timeUp = [];
 var ctx, ctxp;
+
 function report() {
   for (let i = 0; i < examData.length; i++) {
     examTime.push(examData[i][0]);
@@ -429,26 +456,37 @@ function report() {
       const value = parts[1];
       obj[key] = parseFloat(value);
     });
+
     examDataObj.push(obj);
   }
 
   //  px / seconds
-  for (let i = 0; i < examDataObj.length - 1; i++) {
+  for (let i = 1; i < examDataObj.length; i++) {
     const diffX =
-      parseInt(examDataObj[i + 1]["x"]) - parseInt(examDataObj[i]["x"]);
+      parseInt(examDataObj[i]["x"]) - parseInt(examDataObj[i - 1]["x"]);
     const diffY =
-      parseInt(examDataObj[i + 1]["y"]) - parseInt(examDataObj[i]["y"]);
-    const diffT = (examTime[i + 1] - examTime[i]) / 1000; //seconds
+      parseInt(examDataObj[i]["y"]) - parseInt(examDataObj[i - 1]["y"]);
+    const diffT = (examTime[i] - examTime[i - 1]) / 1000; //seconds
     const speedWriting = parseInt(
       Math.sqrt((diffX / diffT) ** 2 + (diffY / diffT) ** 2)
     );
     speedModule.push(speedWriting);
     pressureGrafic.push(examDataObj[i]["p"]);
+    csvData.push({
+      t: examTime[i],
+      x: examDataObj[i]["x"],
+      y: examDataObj[i]["y"],
+      s: speedWriting,
+      p: examDataObj[i]["p"],
+      b: examDataObj[i]["b"],
+    });
 
     if (examDataObj[i]["p"] == 0 && i < examDataObj.length) {
-      timeUp.push((examTime[i + 1] - examTime[i]) / 1000);
+      timeUp.push((examTime[i] - examTime[i - 1]) / 1000); // ANALISAR
     }
   }
+
+  createCSV(csvData);
 
   const tempmax = (examTime.at(-1) - examTime[0]) / 1000;
   const tempoTotalElement = document.getElementById("totalTemp");
@@ -469,13 +507,11 @@ function report() {
   tempowritting.textContent +=
     "Tempo escrevendo: " + writting.toFixed(2) + " segundos";
 
-  var tempo = linspace(0, tempmax, examTime.length, (endpoint = true));
-
   ctx = document.getElementById("velocidad").getContext("2d");
   chartVelocity = new Chart(ctx, {
     type: "line",
     data: {
-      labels: tempo,
+      labels: examTime,
       datasets: [
         {
           label: "Velocidade",
@@ -506,7 +542,7 @@ function report() {
   chartPressure = new Chart(ctxp, {
     type: "line",
     data: {
-      labels: tempo,
+      labels: examTime,
       datasets: [
         {
           label: "pressao",
