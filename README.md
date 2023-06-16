@@ -7,7 +7,7 @@ Trabalho de conclusão de curso em Engenharia Biomédica sobre Disgrafia
 - update com:
 
 ```
-npm i
+npm install
 ```
 
 - rodar o projeto com:

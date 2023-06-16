@@ -16,7 +16,7 @@ const examDataObj = [];
 const eventsWriting = [];
 const speedModule = [];
 const pressureGrafic = [];
-const startTime = Date.now();
+const startTime = "";
 const csvData = [];
 
 const examArea = document.getElementById("examArea");
@@ -135,6 +135,7 @@ window.addEventListener(
     // for traditional mouse/touch/pen handling.
     //
     eventDraw = function (evt) {
+      startTime = Date.now();
       var outStr = evt.type;
       var canvasRect = myCanvas.getBoundingClientRect();
       var screenPos = {
@@ -241,6 +242,7 @@ window.addEventListener(
     // Handle drawing for HTML5 Pointer Events.
     //
     function pointerEventDraw(evt) {
+      const startTime = Date.now();
       var outStr = "";
       var stringEvents = "";
       var canvasRect = myCanvas.getBoundingClientRect();
@@ -388,7 +390,7 @@ window.addEventListener(
         }
       }
     }
-
+    console.log(examData);
     if (supportsPointerEvents) {
       // if Pointer Events are supported, only listen to pointer events
       for (let idx = 0; idx < pointerEvents.length; idx++) {
@@ -421,7 +423,6 @@ function createCSV(csvData) {
       csvData[i].x,
       csvData[i].y,
       csvData[i].s,
-      csvData[i].p,
     ];
     data.push(row.join(","));
   }
@@ -474,11 +475,11 @@ function report() {
     pressureGrafic.push(examDataObj[i]["p"]);
     csvData.push({
       t: examTime[i],
+      b: examDataObj[i]["b"],
       x: examDataObj[i]["x"],
       y: examDataObj[i]["y"],
       s: speedWriting,
       p: examDataObj[i]["p"],
-      b: examDataObj[i]["b"],
     });
 
     if (examDataObj[i]["p"] == 0 && i < examDataObj.length) {
