@@ -4,19 +4,30 @@ Trabalho de conclusão de curso em Engenharia Biomédica sobre Disgrafia
 
 ## Rodar o projeto
 
-- update com:
+- Update com:
 
 ```
 npm install
 ```
 
-- rodar o projeto com:
+- Rodar o projeto com:
 
 ```
 npm run start
 ```
 
 # Descrição da mesa
+
+## Instalar o driver da Mesa digitalizadora
+
+```
+https://www.wacom.com/pt-br/getting-started/one-by-wacom
+```
+
+- Seguir todas as orientações de instalação.
+- Configurar o drive da mesa digitalizadora para a area do exame.
+
+---
 
 - Marca: Wacom
 - Modelo: CTL-472

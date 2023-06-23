@@ -16,7 +16,9 @@ const examDataObj = [];
 const eventsWriting = [];
 const speedModule = [];
 const pressureGrafic = [];
-const startTime = "";
+const posxGrafic = [];
+const posyGrafic = [];
+const startTime = Date.now();
 const csvData = [];
 
 const examArea = document.getElementById("examArea");
@@ -135,7 +137,6 @@ window.addEventListener(
     // for traditional mouse/touch/pen handling.
     //
     eventDraw = function (evt) {
-      startTime = Date.now();
       var outStr = evt.type;
       var canvasRect = myCanvas.getBoundingClientRect();
       var screenPos = {
@@ -242,7 +243,6 @@ window.addEventListener(
     // Handle drawing for HTML5 Pointer Events.
     //
     function pointerEventDraw(evt) {
-      const startTime = Date.now();
       var outStr = "";
       var stringEvents = "";
       var canvasRect = myCanvas.getBoundingClientRect();
@@ -284,17 +284,11 @@ window.addEventListener(
             if (useTilt) {
               // Favor tilts in x direction.
               context.lineWidth = pressure * 3 * Math.abs(tilt.x);
-              // Uncomment for a "vaseline" (smeary) effect:
-              //context.shadowColor = "blue";
-              //context.shadowBlur = context.lineWidth / 2;
             } else {
               context.lineWidth = pressure * 10;
             }
             break;
           case "mouse":
-            // A mouse was used
-            //pressure = 2;
-            //context.lineWidth = pressure;
             context.strokeStyle = "black";
             if (buttons == EPenButton.barrel) {
               pressure = 0.5;
@@ -405,10 +399,8 @@ window.addEventListener(
   },
   true
 );
-//console.log("dados: ", examData);
 
-/////////////////////////////////////////////////////////////////////////
-////////////////////////REPORT
+////////////////////////REPORT ///////////////////////////////
 
 function createCSV(csvData) {
   console.log(csvData);
@@ -473,8 +465,10 @@ function report() {
     );
     speedModule.push(speedWriting);
     pressureGrafic.push(examDataObj[i]["p"]);
+    posxGrafic.push(examDataObj[i]["x"]);
+    posyGrafic.push(examDataObj[i]["y"]);
     csvData.push({
-      t: examTime[i],
+      t: examTime[i] - examTime[0],
       b: examDataObj[i]["b"],
       x: examDataObj[i]["x"],
       y: examDataObj[i]["y"],
@@ -570,39 +564,102 @@ function report() {
       },
     },
   });
-
-  var canvasVelocity = document.getElementById("velocidad");
-  var graficVelocity = canvasVelocity.toDataURL("image/jpeg", 1.0);
-  console.log(graficVelocity);
-  var canvasPressure = document.getElementById("pressao");
-  var graficPressure = canvasPressure.toDataURL("image/jpeg", 1.0);
-
-  function getChartImage() {
-    var canvas = document.getElementById("velocidad");
-    var chartDataURL = canvas.toDataURL("image/jpeg", 1.0);
-    return chartDataURL;
-  }
-
-  var docDefinition = {
-    content: [
-      {
-        text: "Relatório da Dinânica da Escrita: ",
-        fontSize: 20,
-        bold: true,
-        margin: [0, 0, 0, 10],
+  var ctxposx = document.getElementById("posx").getContext("2d");
+  chartposx = new Chart(ctxposx, {
+    type: "line",
+    data: {
+      labels: examTime,
+      datasets: [
+        {
+          label: "Pos X",
+          data: posxGrafic,
+          borderColor: "blue",
+          fill: false,
+          tension: 0.1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Posição em X ",
+        },
       },
-      { image: graficVelocity, with: 400, aligment: "center" },
-    ],
-  };
-  pdfMake.createPdf(docDefinition).download("relatorio.pdf");
+      scales: {
+        x: {
+          type: "linear",
+          position: "bottom",
+        },
+      },
+    },
+  });
 
-  const doc = new jspdf.jsPDF();
-  doc.addImage(graficVelocity, "JPEG", 10, 10, 190, 100);
-  doc.setFontSize(12);
-  doc.text(
-    "Este é um relatório com o gráfico plotado usando Chart.js.",
-    10,
-    120
-  );
-  doc.save("rel.pdf");
+  var ctxposy = document.getElementById("posy").getContext("2d");
+  chartposy = new Chart(ctxposy, {
+    type: "line",
+    data: {
+      labels: examTime,
+      datasets: [
+        {
+          label: "Pos Y",
+          data: posyGrafic,
+          borderColor: "blue",
+          fill: false,
+          tension: 0.1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Posição em Y ",
+        },
+      },
+      scales: {
+        x: {
+          type: "linear",
+          position: "bottom",
+        },
+      },
+    },
+  });
+
+  // var canvasVelocity = document.getElementById("velocidad");
+  // var graficVelocity = canvasVelocity.toDataURL("image/jpeg", 1.0);
+  // console.log(graficVelocity);
+  // var canvasPressure = document.getElementById("pressao");
+  // var graficPressure = canvasPressure.toDataURL("image/jpeg", 1.0);
+
+  // function getChartImage() {
+  //   var canvas = document.getElementById("velocidad");
+  //   var chartDataURL = canvas.toDataURL("image/jpeg", 1.0);
+  //   return chartDataURL;
+  // }
+
+  // var docDefinition = {
+  //   content: [
+  //     {
+  //       text: "Relatório da Dinânica da Escrita: ",
+  //       fontSize: 20,
+  //       bold: true,
+  //       margin: [0, 0, 0, 10],
+  //     },
+  //     { image: graficVelocity, with: 400, aligment: "center" },
+  //   ],
+  // };
+  // pdfMake.createPdf(docDefinition).download("relatorio.pdf");
+
+  // const doc = new jspdf.jsPDF();
+  // doc.addImage(graficVelocity, "JPEG", 10, 10, 190, 100);
+  // doc.setFontSize(12);
+  // doc.text(
+  //   "Este é um relatório com o gráfico plotado usando Chart.js.",
+  //   10,
+  //   120
+  // );
+  // doc.save("rel.pdf");
 }
