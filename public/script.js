@@ -384,7 +384,7 @@ window.addEventListener(
         }
       }
     }
-    console.log(examData);
+
     if (supportsPointerEvents) {
       // if Pointer Events are supported, only listen to pointer events
       for (let idx = 0; idx < pointerEvents.length; idx++) {
@@ -403,8 +403,15 @@ window.addEventListener(
 ////////////////////////REPORT ///////////////////////////////
 
 function createCSV(csvData) {
-  console.log(csvData);
-  const header = ["Tempo", "Botão", "Pos X", "Pos Y", "Velocidade", "Pressão"];
+  const header = [
+    "Tempo",
+    "Botão",
+    "Pos X",
+    "Pos Y",
+    "Velocidade",
+    "Pressão",
+    "Eventos",
+  ];
   const data = [];
 
   // Preencha 'N' com o número de linhas desejado
@@ -415,6 +422,8 @@ function createCSV(csvData) {
       csvData[i].x,
       csvData[i].y,
       csvData[i].s,
+      csvData[i].p,
+      csvData[i].tipo,
     ];
     data.push(row.join(","));
   }
@@ -447,12 +456,13 @@ function report() {
       const parts = sub.split(":");
       const key = parts[0];
       const value = parts[1];
-      obj[key] = parseFloat(value);
+      //obj[key] = parseFloat(value);
+      obj[key] = value;
     });
 
     examDataObj.push(obj);
   }
-
+  console.log(examDataObj);
   //  px / seconds
   for (let i = 1; i < examDataObj.length; i++) {
     const diffX =
@@ -474,13 +484,14 @@ function report() {
       y: examDataObj[i]["y"],
       s: speedWriting,
       p: examDataObj[i]["p"],
+      tipo: eventsWriting[i][1],
     });
 
     if (examDataObj[i]["p"] == 0 && i < examDataObj.length) {
       timeUp.push((examTime[i] - examTime[i - 1]) / 1000); // ANALISAR
     }
   }
-
+  console.log(csvData);
   createCSV(csvData);
 
   const tempmax = (examTime.at(-1) - examTime[0]) / 1000;
@@ -627,39 +638,4 @@ function report() {
       },
     },
   });
-
-  // var canvasVelocity = document.getElementById("velocidad");
-  // var graficVelocity = canvasVelocity.toDataURL("image/jpeg", 1.0);
-  // console.log(graficVelocity);
-  // var canvasPressure = document.getElementById("pressao");
-  // var graficPressure = canvasPressure.toDataURL("image/jpeg", 1.0);
-
-  // function getChartImage() {
-  //   var canvas = document.getElementById("velocidad");
-  //   var chartDataURL = canvas.toDataURL("image/jpeg", 1.0);
-  //   return chartDataURL;
-  // }
-
-  // var docDefinition = {
-  //   content: [
-  //     {
-  //       text: "Relatório da Dinânica da Escrita: ",
-  //       fontSize: 20,
-  //       bold: true,
-  //       margin: [0, 0, 0, 10],
-  //     },
-  //     { image: graficVelocity, with: 400, aligment: "center" },
-  //   ],
-  // };
-  // pdfMake.createPdf(docDefinition).download("relatorio.pdf");
-
-  // const doc = new jspdf.jsPDF();
-  // doc.addImage(graficVelocity, "JPEG", 10, 10, 190, 100);
-  // doc.setFontSize(12);
-  // doc.text(
-  //   "Este é um relatório com o gráfico plotado usando Chart.js.",
-  //   10,
-  //   120
-  // );
-  // doc.save("rel.pdf");
 }
